@@ -22,9 +22,230 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+# API Documentation
+
+## Authentication (Auth)
+
+### 1. **Sign Up**
+- **Endpoint**: `/auth/signup`
+- **Method**: `POST`
+- **Description**: Register a new user with email and password.
+- **Request Body**:
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "yourpassword"
+  }
+  ```
+- **Response**: 
+  - `201 Created`: Returns an access token.
+    ```json
+    {
+      "access_token": "jwt_token_here"
+    }
+    ```
+  - `403 Forbidden`: Credentials already taken (unique email constraint).
+    ```json
+    {
+      "message": "Credentials taken"
+    }
+    ```
+  - `400 Bad Request`: Validation failed for the request body.
+  
+### 2. **Sign In**
+- **Endpoint**: `/auth/signin`
+- **Method**: `POST`
+- **Description**: Log in with email and password.
+- **Request Body**:
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "yourpassword"
+  }
+  ```
+- **Response**: 
+  - `200 OK`: Returns an access token.
+    ```json
+    {
+      "access_token": "jwt_token_here"
+    }
+    ```
+  - `403 Forbidden`: Invalid credentials (wrong email or password).
+    ```json
+    {
+      "message": "Credentials incorrect"
+    }
+    ```
+
+---
+
+## User
+
+### 1. **Get Me**
+- **Endpoint**: `/user/me`
+- **Method**: `GET`
+- **Description**: Fetch the details of the logged-in user.
+- **Headers**: 
+  - `Authorization`: Bearer `<JWT Token>`
+- **Response**: 
+  - `200 OK`: Returns the user details.
+    ```json
+    {
+      "id": 1,
+      "email": "user@example.com",
+      "firstName": "John",
+      "lastName": "Doe"
+    }
+    ```
+  - `401 Unauthorized`: Invalid or missing token.
+
+### 2. **Edit User**
+- **Endpoint**: `/user`
+- **Method**: `PATCH`
+- **Description**: Edit the logged-in user's information.
+- **Headers**: 
+  - `Authorization`: Bearer `<JWT Token>`
+- **Request Body (Partial Update)**:
+  ```json
+  {
+    "email": "new-email@example.com",
+    "firstName": "John",
+    "lastName": "Doe"
+  }
+  ```
+- **Response**:
+  - `200 OK`: User details updated, excluding the password hash.
+    ```json
+    {
+      "id": 1,
+      "email": "new-email@example.com",
+      "firstName": "John",
+      "lastName": "Doe"
+    }
+    ```
+  - `401 Unauthorized`: Invalid or missing token.
+
+---
+
+## Bookmarks
+
+### 1. **Get All Bookmarks**
+- **Endpoint**: `/bookmark`
+- **Method**: `GET`
+- **Description**: Get all bookmarks for the logged-in user.
+- **Headers**: 
+  - `Authorization`: Bearer `<JWT Token>`
+- **Response**:
+  - `200 OK`: Returns an array of bookmarks.
+    ```json
+    [
+      {
+        "id": 1,
+        "title": "Bookmark 1",
+        "description": "Optional description",
+        "link": "https://example.com"
+      },
+      {
+        "id": 2,
+        "title": "Bookmark 2",
+        "description": null,
+        "link": "https://example2.com"
+      }
+    ]
+    ```
+  - `401 Unauthorized`: Invalid or missing token.
+
+### 2. **Get Bookmark by ID**
+- **Endpoint**: `/bookmark/:id`
+- **Method**: `GET`
+- **Description**: Get a specific bookmark by ID.
+- **Headers**: 
+  - `Authorization`: Bearer `<JWT Token>`
+- **Params**: 
+  - `id`: Bookmark ID (integer).
+- **Response**: 
+  - `200 OK`: Returns the bookmark details.
+    ```json
+    {
+      "id": 1,
+      "title": "Bookmark Title",
+      "description": "Optional description",
+      "link": "https://example.com"
+    }
+    ```
+  - `404 Not Found`: Bookmark not found.
+
+### 3. **Create Bookmark**
+- **Endpoint**: `/bookmark`
+- **Method**: `POST`
+- **Description**: Create a new bookmark.
+- **Headers**: 
+  - `Authorization`: Bearer `<JWT Token>`
+- **Request Body**:
+  ```json
+  {
+    "title": "Bookmark Title",
+    "description": "Optional description",
+    "link": "https://example.com"
+  }
+  ```
+- **Response**: 
+  - `201 Created`: Bookmark successfully created.
+    ```json
+    {
+      "id": 1,
+      "title": "Bookmark Title",
+      "description": "Optional description",
+      "link": "https://example.com"
+    }
+    ```
+  - `400 Bad Request`: Validation failed.
+
+### 4. **Edit Bookmark by ID**
+- **Endpoint**: `/bookmark/:id`
+- **Method**: `PATCH`
+- **Description**: Edit an existing bookmark by ID.
+- **Headers**: 
+  - `Authorization`: Bearer `<JWT Token>`
+- **Params**: 
+  - `id`: Bookmark ID (integer).
+- **Request Body (Partial Update)**:
+  ```json
+  {
+    "title": "Updated Title",
+    "description": "Updated Description",
+    "link": "https://updated-example.com"
+  }
+  ```
+- **Response**: 
+  - `200 OK`: Bookmark updated successfully.
+    ```json
+    {
+      "id": 1,
+      "title": "Updated Title",
+      "description": "Updated Description",
+      "link": "https://updated-example.com"
+    }
+    ```
+  - `403 Forbidden`: User does not own the bookmark or invalid access.
+  - `404 Not Found`: Bookmark not found.
+
+### 5. **Delete Bookmark by ID**
+- **Endpoint**: `/bookmark/:id`
+- **Method**: `DELETE`
+- **Description**: Delete a bookmark by ID.
+- **Headers**: 
+  - `Authorization`: Bearer `<JWT Token>`
+- **Params**: 
+  - `id`: Bookmark ID (integer).
+- **Response**: 
+  - `204 No Content`: Bookmark successfully deleted.
+  - `403 Forbidden`: User does not own the bookmark or invalid access.
+  - `404 Not Found`: Bookmark not found.
+
+---
 
 ## Project setup
 
